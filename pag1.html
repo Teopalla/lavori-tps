@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leggi Anagrafica XML</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 15px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 125%;
+            margin-top: 25px;
+        }
+        th, td {
+            border: 1px solid hsl(0, 0%, 0%);
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: hsl(0, 77%, 32%);
+        }
+    </style>
+</head>
+<body>
+    <h1>Anagrafica generale Pallavicini Matteo</h1>
+    <button id="loadData">Dati:</button>
+    <table id="data-table" style="display: none;">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Cognome</th>
+                <th>Indirizzo</th>
+                <th>Città</th>
+                <th>CAP</th>
+                <th>Cellulare</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table> 
+
+    <script>
+        document.getElementById("loadData").addEventListener("click", function() {
+            const xhr = new XMLHttpRequest();
+            const url = "https://raw.githubusercontent.com/AlessioMarchesii/LAVORI/main/anagrafica"; 
+
+            xhr.open("GET", url, true);
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    const xmlData = xhr.responseXML;
+                    const tableBody = document.querySelector("#data-table tbody");
+                    tableBody.innerHTML = ""; 
+
+                    const dati = xmlData.getElementsByTagName("dati");
+                    for (let i = 0; i < dati.length; i++) {
+                        const persona = dati[i].getElementsByTagName("persona")[0];
+                        const nome = persona.getElementsByTagName("nome")[0].textContent;
+                        const cognome = persona.getElementsByTagName("cognome")[0].textContent;
+                        const indirizzo = persona.getElementsByTagName("indirizzo")[0].textContent;
+                        const citta = persona.getElementsByTagName("citta")[0].textContent;
+                        const cap = persona.getElementsByTagName("cap")[0].textContent;
+                        const cellulare = persona.getElementsByTagName("cellulare")[0].textContent;
+
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+                            <td>${nome}</td>
+                            <td>${cognome}</td>
+                            <td>${indirizzo}</td>
+                            <td>${citta}</td>
+                            <td>${cap}</td>
+                            <td>${cellulare}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    }
+
+                    document.getElementById("data-table").style.display = "table";
+                } else {
+                    alert("Errore nel caricamento del file XML: " + xhr.status);
+                }
+            };
+
+            xhr.onerror = function() {
+                alert("Errore nella connessione al file XML.");
+            };
+
+            xhr.send();
+        });
+    </script>
+</body>
+</html>
